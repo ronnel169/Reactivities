@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 // import { ducks } from '../../demo';
 // import DuckItem from '../../DuckItem';
 //import axios from 'axios';
-import { Container } from 'semantic-ui-react';
+import { Button, Container } from 'semantic-ui-react';
 //import List from 'semantic-ui-react/dist/commonjs/elements/List';
 import { Activity } from '../models/activity';
 import NavBar from './NavBar';
@@ -12,66 +12,72 @@ import ActivityDashboard from '../../features/activities/dashboard/ActivityDashb
 import {v4 as uuid} from 'uuid';
 import agent from '../api/agent';
 import LoadingComponents from './LoadingComponents';
+import { useStore } from '../stores/store';
+import { observer } from 'mobx-react-lite';
 
 
 function App() {
+const {activityStore} = useStore();
+
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | undefined>(undefined);
   const [editMode, setEditMode] = useState(false);
-  const [loading, setLoading] = useState(true);
+  //const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    agent.Activities.list()
-      .then(response => {
-        let activities: Activity[] = [];
-        response.forEach(activity => {
-          activity.date = activity.date.split('T')[0];
-          activities.push(activity);
-        })
+    activityStore.loadingActivities();
+    //CODE TRANSFER TO C:\Users\Lenovo\desktop\reactproj\Reactivities\client-app\src\app\stores\activityStore.ts
+    // agent.Activities.list()
+    //   .then(response => {
+    //     let activities: Activity[] = [];
+    //     response.forEach(activity => {
+    //       activity.date = activity.date.split('T')[0];
+    //       activities.push(activity);
+    //     })
 
-        console.log(activities);
-        setActivities(activities);
-        setLoading(false);
-      })
-  }, [])
+    //     console.log(activities);
+    //     setActivities(activities);
+    //     setLoading(false);
+    //   })
+  }, [activityStore])
+  //CODE TRANSFER TO C:\Users\Lenovo\desktop\reactproj\Reactivities\client-app\src\app\stores\activityStore.ts
+  // function handleSelectActivity(id: string) {
+  //   setSelectedActivity(activities.find(x => x.id === id));
+  // }
 
-  function handleSelectActivity(id: string) {
-    setSelectedActivity(activities.find(x => x.id === id));
-  }
+  // function handleCancelSelectActivity() {
+  //   setSelectedActivity(undefined);
+  // }
 
-  function handleCancelSelectActivity() {
-    setSelectedActivity(undefined);
-  }
+  // function handleFormOpen(id?: string) {
+  //   id? handleSelectActivity(id) : handleCancelSelectActivity();
+  //   setEditMode(true);
+  // }
 
-  function handleFormOpen(id?: string) {
-    id? handleSelectActivity(id) : handleCancelSelectActivity();
-    setEditMode(true);
-  }
+  // function handleFormClose() {
+  //   setEditMode(false);
+  // }
 
-  function handleFormClose() {
-    setEditMode(false);
-  }
-
-  function handleCreateOrEditActivity(activity: Activity) {
-    setSubmitting(true);
-    if (activity.id) {
-      agent.Activities.update(activity).then(() => {
-        setActivities([...activities.filter(x => x.id !== activity.id), activity]);
-        setSelectedActivity(activity);
-        setEditMode(false);
-        setSubmitting(false)
-      });
-    } else {
-      activity.id = uuid();
-      //setActivities([...activities, {...activity, id: uuid()}]);
-      agent.Activities.create(activity).then(() => {
-        setActivities([...activities, activity]);
-        setSelectedActivity(activity);
-        setEditMode(false);
-        setSubmitting(false)
-      })
-    }
+  // function handleCreateOrEditActivity(activity: Activity) {
+  //   setSubmitting(true);
+  //   if (activity.id) {
+  //     agent.Activities.update(activity).then(() => {
+  //       setActivities([...activities.filter(x => x.id !== activity.id), activity]);
+  //       setSelectedActivity(activity);
+  //       setEditMode(false);
+  //       setSubmitting(false)
+  //     });
+  //   } else {
+  //     activity.id = uuid();
+  //     //setActivities([...activities, {...activity, id: uuid()}]);
+  //     agent.Activities.create(activity).then(() => {
+  //       setActivities([...activities, activity]);
+  //       setSelectedActivity(activity);
+  //       setEditMode(false);
+  //       setSubmitting(false)
+  //     })
+  //   }
 
     
     // activity.id 
@@ -80,39 +86,41 @@ function App() {
 
     // setEditMode(false);
     // setSelectedActivity(activity);
-  }
+  //}
 
-  function handleDeleteActivity(id: string) {
-    setSubmitting(true);
-    agent.Activities.dalete(id).then(() => {
-      setActivities([...activities.filter(x => x.id !== id)]);
-      setSubmitting(false);
-    });
+  // function handleDeleteActivity(id: string) {
+  //   setSubmitting(true);
+  //   agent.Activities.dalete(id).then(() => {
+  //     setActivities([...activities.filter(x => x.id !== id)]);
+  //     setSubmitting(false);
+  //   });
     
-  }
+  // }
 
-  if (loading) return <LoadingComponents content='Loading app'/>
+  if (activityStore.loadingInitial) return <LoadingComponents content='Loading app'/>
 
   return (
     <div>
-      <NavBar openForm={handleFormOpen}/>
+      <NavBar/>
       {/* <Header as='h2' icon='users' content='Reactivities'/> */}
       {/* <img src={logo} className="App-logo" alt="logo" /> */}
       {/* {ducks.map(duck => (
           <DuckItem duck={duck} key={duck.name}></DuckItem>
         ))} */}
       <Container style={{ marginTop: '7em' }}>
+        <h2>{activityStore.title}</h2>
+        <Button onClick={activityStore.setTitle} primary content='Add exclamation!'/>
         <ActivityDashboard
-          activities={activities}
-          selectedActivity={selectedActivity}
-          selectActivity={handleSelectActivity}
-          cancelActivity={handleCancelSelectActivity}
-          editMode={editMode}
-          openForm={handleFormOpen}
-          closeForm={handleFormClose}
-          createOrEdit={handleCreateOrEditActivity}
-          deleteActivity={handleDeleteActivity}
-          submitting = {submitting}
+          //activities={activityStore.activities}
+          //selectedActivity={selectedActivity}
+          // selectActivity={activityStore.selectedActivity}
+          // cancelActivity={activityStore.cancelSelectedActivity}
+          //editMode={editMode}
+          // openForm={activityStore.openForm}
+          // closeForm={activityStore.closeForm}
+          //createOrEdit={handleCreateOrEditActivity}
+          // deleteActivity={handleDeleteActivity}
+          // submitting = {submitting}
         />
       </Container>
       {/* <Button content="test"/> */}
@@ -120,4 +128,4 @@ function App() {
   );
 }
 
-export default App;
+export default observer(App);
