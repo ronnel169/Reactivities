@@ -6,6 +6,7 @@ import { Activity } from "../../../app/models/activity";
 import { useStore } from "../../../app/stores/store";
 import ActivityDetails from "../details/ActivityDetails";
 import ActivityForm from "../form/ActivityForm";
+import ActivityFilters from "./ActivityFilters";
 import ActivityList from "./ActivityList";
 
 interface Props {
@@ -38,18 +39,7 @@ export default observer(function ActivityDashboard () {
                 <ActivityList/>
             </Grid.Column>
             <Grid.Column width='6'>
-                <h2>Activity filters</h2>
-                {/* {selectedActivity && !editMode &&
-                    <ActivityDetails 
-                        //activity={selectedActivity} 
-                        // cancelSelectedActivity={cancelActivity}
-                        // openForm={openForm}
-                        
-                    />
-                }
-                    {editMode && 
-                        <ActivityForm/>
-                    } */}
+                <ActivityFilters />
             </Grid.Column>
         </Grid>
     )
